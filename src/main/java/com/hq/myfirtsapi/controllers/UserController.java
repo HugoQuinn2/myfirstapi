@@ -15,27 +15,27 @@ public class UserController {
     @Autowired
     private UsersService usersService;
 
-    @GetMapping("/getusers")
+    @GetMapping
     public ArrayList<UserModel> getUsers(){
         return this.usersService.getUsers();
     }
 
-    @PostMapping("/saveuser")
+    @PostMapping
     public UserModel saveUser(@RequestBody UserModel user){
         return this.usersService.saveUser(user);
     }
 
-    @GetMapping(path = "/getusers/{id}")
+    @GetMapping(path = "{id}")
     public Optional<UserModel> getUserById(@PathVariable("id") Long id){
         return this.usersService.getById(id);
     }
 
-    @PutMapping("updateUser")
+    @PutMapping(path = "{id}")
     public UserModel updateUserModelById(@RequestBody UserModel request, @PathVariable("id") Long id){
         return this.usersService.updateUserById(request, id);
     }
 
-    @DeleteMapping(path = "/deleteuser/{id}")
+    @DeleteMapping(path = "{id}")
     public String deleteById(@PathVariable("id") Long id){
         boolean ok = this.usersService.deleteUser(id);
         if(ok){

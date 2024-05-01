@@ -9,13 +9,10 @@ public class UserModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column
     private String fistName;
-
     @Column
     private String lastName;
-
     @Column
     private String email;
 
