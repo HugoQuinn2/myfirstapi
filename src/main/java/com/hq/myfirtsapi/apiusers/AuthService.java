@@ -1,4 +1,4 @@
-package com.hq.myfirtsapi.services;
+package com.hq.myfirtsapi.apiusers;
 
 import com.hq.myfirtsapi.apiusers.Role;
 import com.hq.myfirtsapi.apiusers.UserApiModel;
@@ -6,6 +6,7 @@ import com.hq.myfirtsapi.jwt.IJwtService;
 import com.hq.myfirtsapi.models.*;
 import com.hq.myfirtsapi.apiusers.IUserApiRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,6 +15,7 @@ public class AuthService {
 
     private final IUserApiRepository userApiRepository;
     private final IJwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
     public AuthModel login(LoginModel request) {
         return null;
     }
@@ -24,7 +26,7 @@ public class AuthService {
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())
                 .country(request.getCountry())
-                .password(request.getPassword())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();
 
