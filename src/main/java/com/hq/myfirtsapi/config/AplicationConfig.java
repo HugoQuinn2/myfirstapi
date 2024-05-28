@@ -18,7 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class AplicationConfig {
 
-    private IUserApiRepository userApiRepository;
+    private final IUserApiRepository userApiRepository;
     @Bean
     public AuthenticationManager authenticationManager (AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

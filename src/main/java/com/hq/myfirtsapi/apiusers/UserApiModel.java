@@ -19,18 +19,17 @@ import java.util.List;
 public class UserApiModel implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue()
+    Integer id;
 
     @Column(nullable = false)
-    private String username;
-
-    private String lastname;
-    private String firstname;
-    private String country;
-    private String password;
+    String username;
+    String lastname;
+    String firstname;
+    String country;
+    String password;
     @Enumerated(EnumType.STRING)
-    private Role role;
+    Role role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -39,7 +38,7 @@ public class UserApiModel implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return password;
     }
 
     @Override

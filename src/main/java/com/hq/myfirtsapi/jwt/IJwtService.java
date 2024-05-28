@@ -1,5 +1,6 @@
 package com.hq.myfirtsapi.jwt;
 
+import com.hq.myfirtsapi.apiusers.AuthError;
 import com.hq.myfirtsapi.apiusers.UserApiModel;
 import com.hq.myfirtsapi.helpers.ReaderProperties;
 import io.jsonwebtoken.Claims;
@@ -7,35 +8,43 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
 @Service
+@Slf4j
 public class IJwtService {
-    private static final String SECRET_KEY = "061101061101061101061101061101060611010611010611010611010611010";
+    @Value("${key.private}")
+    private String SECRET_KEY;
 
-    /*public IJwtService(){
-        ReaderProperties properties = new ReaderProperties("../../../resource/aplication.properties");
-        this.SECRET_KEY = properties.getSECRET_KEY();
-        System.out.println(SECRET_KEY);
-    }*/
-
-    public String getToken(UserApiModel user){
+    public String getToken(UserDetails user){
         return getToken(new HashMap<>(), user);
     }
+
     private String getToken(Map<String, Object> extraclaims, UserDetails user){
+        DateFormat df = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+
+        Date issueDate = new Date(System.currentTimeMillis()); //Fecha creacion de llave
+        Date expirationDate = new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24)); //Fecha expiracion de llave +1 dia
+
+        log.info(AuthError.TOKEN_CREATED.getMessage(user.getUsername(), df.format(issueDate), df.format(expirationDate)));
+
         return Jwts
                 .builder()
                 .setClaims(extraclaims)
                 .setSubject(user.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))  //Fecha de inicio de vigencia de la llave
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24)) //Fecha de fin de vigenca +1 dia
+                .setIssuedAt(issueDate)
+                .setExpiration(expirationDate)
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -51,16 +60,25 @@ public class IJwtService {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = getUserNameFromToken(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        boolean tokenState = (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        if(isTokenExpired(token)){
+            log.info(AuthError.TOKEN_EXPIRED.getMessage());
+        }else if (!username.equals(userDetails.getUsername())){
+            log.info(AuthError.INVALID_USER.getMessage());
+        } else{
+            return true;
+        }
+        return false;
     }
 
+    //Obtenener los claims del token
     private Claims getAllClaims(String token){
         return Jwts
                 .parserBuilder()
-                .setSigningKey(getKey())
+                .setSigningKey(getKey()) //especificar clabe
                 .build()
-                .parseClaimsJwt(token)
-                .getBody();
+                .parseClaimsJws(token) //cetear el claim
+                .getBody(); //Obtener el cuerpo
     }
 
     public <T> T getClaim(String token, Function<Claims, T> claimsResolver){

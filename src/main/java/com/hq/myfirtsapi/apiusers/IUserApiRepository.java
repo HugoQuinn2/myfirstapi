@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
-public interface IUserApiRepository extends JpaRepository<UserApiModel, Long> {
+public interface IUserApiRepository extends JpaRepository<UserApiModel, Integer> {
     Optional<UserApiModel> findByUsername(String username);
 }

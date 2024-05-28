@@ -19,15 +19,33 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationProvider authProvider;
+    public static final String[] AUTH_WHITELIST = {
+            // -- Swagger UI v2
+            "/v2/api-docs",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/webjars/**",
+            // -- Swagger UI v3 (OpenAPI)
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            // -- Public Endpoints
+            "/auth/**",
+            "/doc/**"
+    };
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         return http
-                .csrf(AbstractHttpConfigurer::disable) //Deshabilitar la autenticacion con csrf no se utilizara
+                .csrf(csrf ->
+                        csrf
+                                .disable()) //Deshabilitar la autenticacion con csrf no se utilizara
                 .authorizeHttpRequests(authRequest -> //Filtro para rutas protegidas
                         authRequest
-                                .requestMatchers("/auth/**", "/doc/**").permitAll() //Todos los request los cuales tengan auth seran publico y no ocuparan autenticacion
+                                .requestMatchers(AUTH_WHITELIST).permitAll() //Todos los request los cuales tengan auth seran publico y no ocuparan autenticacion
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManager ->
@@ -37,5 +55,7 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
+
+
 
 }

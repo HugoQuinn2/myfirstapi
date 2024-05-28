@@ -1,9 +1,7 @@
 package com.hq.myfirtsapi.apiusers;
 
-import com.hq.myfirtsapi.models.AuthModel;
 import com.hq.myfirtsapi.models.LoginModel;
 import com.hq.myfirtsapi.models.RegisterModel;
-import com.hq.myfirtsapi.apiusers.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

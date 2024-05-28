@@ -1,4 +1,4 @@
-package com.hq.myfirtsapi.models;
+package com.hq.myfirtsapi.apiusers;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
